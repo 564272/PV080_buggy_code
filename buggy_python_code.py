@@ -8,8 +8,7 @@ app = flask.Flask(__name__)
 @app.route("/")
 def index():
     version = flask.request.args.get("urllib_version")
-    url = flask.request.args.get("url")
-    return fetch_website(version, url)
+    return fetch_website(version)
 
 
 CONFIG = {"API_KEY": "771df488714111d39138eb60df756e6b"}
@@ -21,18 +20,16 @@ class Person:
 
 
 def print_nametag(format_string, person):
-    # odstranění format string vulnerability
     print(f"{format_string} {person.name}")
 
 
-def fetch_website(urllib_version, url):
-    # odstranění exec (code injection)
+def fetch_website(urllib_version):
     if urllib_version != "3":
         return "Unsupported urllib version"
 
     try:
         http = urllib3.PoolManager()
-        response = http.request("GET", url)
+        response = http.request("GET", "https://www.google.com")
         return response.data.decode("utf-8", errors="ignore")
     except Exception:
         return "Exception"
@@ -40,13 +37,11 @@ def fetch_website(urllib_version, url):
 
 def load_yaml(filename):
     with open(filename) as stream:
-        # bezpečné načítání
         deserialized_data = yaml.safe_load(stream)
     return deserialized_data
 
 
 def authenticate(password):
-    # odstranění assert vulnerability
     if password != "Iloveyou":
         raise ValueError("Invalid password!")
     print("Successfully authenticated!")
@@ -67,7 +62,7 @@ if __name__ == '__main__':
 
     elif choice == "2":
         urllib_version = input("Choose version of urllib: ")
-        print(fetch_website(urllib_version, url="https://www.google.com"))
+        print(fetch_website(urllib_version))
 
     elif choice == "3":
         load_yaml(input("File name: "))
